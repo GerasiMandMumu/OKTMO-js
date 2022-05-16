@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>CSV</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+    <select class="sel">
+        <option>Split</option>
+        <option>Regular expressions</option>
+    </select>
+
+    <input type="text" class="region" placeholder="Регион">
+    <input type="text" class="district" placeholder="Район, город, городской округ">
+    <input type="text" class="locality" placeholder="Населенный пункт">
+
+    <div class="container">
+        <div class="box"></div>
+        <div class="box-1"></div>
+    </div>
+    
+    <script type="module">
+
+        import {CSVLoader} from './js/CSVLoader.js';
+        import {DataPrinter} from './js/DataPrinter.js';
+        import {DataFilter} from './js/DataFilter.js';
+
+        let selector = document.querySelector('.sel');
+
+        document.addEventListener('DOMContentLoaded', () => {            
+            CSVLoader.load('./data/small.csv').then(CSVLoader.splitParser).then(DataPrinter.listToTable).
+            then(DataFilter.filterRegion).then(DataFilter.filterDistrict).
+            then(DataFilter.filterLocality).then(DataFilter.toList); 
+
+        });
+       
+        selector.addEventListener('change', e => {
+            if("Split" == e.target.value){
+                document.body.querySelector('.box').innerHTML = '';
+                document.body.querySelector('.box-1').innerHTML = '';
+                CSVLoader.load('./data/small.csv').then(CSVLoader.splitParser).then(DataPrinter.listToTable).
+                then(DataFilter.filterRegion).then(DataFilter.filterDistrict).
+                then(DataFilter.filterLocality).then(DataFilter.toList); 
+                console.log('split');
+            }
+            else if("Regular expressions" == e.target.value){
+                document.body.querySelector('.box').innerHTML = '';
+                document.body.querySelector('.box-1').innerHTML = '';
+                CSVLoader.load('./data/small.csv').then(CSVLoader.regexParser).then(DataPrinter.listToTable).
+                then(DataFilter.filterRegion).then(DataFilter.filterDistrict).
+                then(DataFilter.filterLocality).then(DataFilter.toList); 
+                console.log('reg');
+            }
+        });
+
+        function showInPre(text){
+            let a = document.createElement('pre');
+            a.innerHTML = text;
+            document.body.appendChild(a);
+        }
+
+        //let text1 = CSVLoader.load('./data/data.csv').then(CSVLoader.splitParser);
+        //let text2 = CSVLoader.loadAsync('./data/data.csv');
+        //text2.then(showInPre);
+        //let a = CSVLoader.splitParser(text);
+
+    </script>
+
+</body>
+
+</html>
